@@ -6,89 +6,89 @@ using UnityStandardAssets.CrossPlatformInput;
 
 public class PlayerController : MonoBehaviour {
 
-    // todo work-out why sometimes slow on first play of scene
+	// todo work-out why sometimes slow on first play of scene
 
-    [Header("General")]
-    [Tooltip("In ms^-1")][SerializeField] float controlSpeed= 20f;
-    [Tooltip("In m")] [SerializeField] float xRange = 5f;
-    [Tooltip("In m")] [SerializeField] float yRange = 3f;
-    [SerializeField] GameObject[] guns;
+	[Header ("General")]
+	[Tooltip ("In ms^-1")][SerializeField] float controlSpeed = 20f;
+	[Tooltip ("In m")][SerializeField] float xRange = 5f;
+	[Tooltip ("In m")][SerializeField] float yRange = 3f;
+	[SerializeField] GameObject[] guns;
 
-    [Header("Screen-position Based")]
-    [SerializeField] float positionPitchFactor = -5f;
-    [SerializeField] float positionYawFactor = 5f;
+	[Header ("Screen-position Based")]
+	[SerializeField] float positionPitchFactor = -5f;
+	[SerializeField] float positionYawFactor = 5f;
 
-    [Header("Control-throw Based")]
-    [SerializeField] float controlPitchFactor = -20f;
-    [SerializeField] float controlRollFactor = -20f;
+	[Header ("Control-throw Based")]
+	[SerializeField] float controlPitchFactor = -20f;
+	[SerializeField] float controlRollFactor = -20f;
 
-    float xThrow, yThrow;
-    bool isControlEnabled = true;
+	float xThrow, yThrow;
+	bool isControlEnabled = true;
 
-    // Update is called once per frame
-    void Update()
-    {
-        if (isControlEnabled)
-        {
-            ProcessTranslation();
-            ProcessRotation();
-            ProcessFiring();
-        }
-    }
+	// Update is called once per frame
+	void Update () {
+		if (isControlEnabled) {
+			// CheckJoypadMethod ();
+			ProcessTranslation ();
+			ProcessRotation ();
+			ProcessFiring ();
+		}
+	}
 
-    void OnPlayerDeath() // called by string reference
-    {
-        isControlEnabled = false;
-    }
+	private static void CheckJoypadMethod () {
+		for (int i = 0; i < 20; i++) {
+			if (Input.GetKeyDown ("joystick 1 button " + i)) {
+				print ("joystick 1 button " + i);
+			}
+		}
+	}
 
-    private void ProcessRotation()
-    {
-        float pitchDueToPosition = transform.localPosition.y * positionPitchFactor;
-        float pitchDueToControlThrow = yThrow * controlPitchFactor;
-        float pitch = pitchDueToPosition + pitchDueToControlThrow;
+	void OnPlayerDeath () // called by string reference
+	{
+		isControlEnabled = false;
+	}
 
-        float yaw = transform.localPosition.x * positionYawFactor;
+	private void ProcessRotation () {
+		float pitchDueToPosition = transform.localPosition.y * positionPitchFactor;
+		float pitchDueToControlThrow = yThrow * controlPitchFactor;
+		float pitch = pitchDueToPosition + pitchDueToControlThrow;
 
-        float roll = xThrow * controlRollFactor;
+		float yaw = transform.localPosition.x * positionYawFactor;
 
-        transform.localRotation = Quaternion.Euler(pitch, yaw, roll);
-    }
+		float roll = xThrow * controlRollFactor;
 
-    private void ProcessTranslation()
-    {
-        xThrow = CrossPlatformInputManager.GetAxis("Horizontal");
-        yThrow = CrossPlatformInputManager.GetAxis("Vertical");
+		transform.localRotation = Quaternion.Euler (pitch, yaw, roll);
+	}
 
-        float xOffset = xThrow * controlSpeed * Time.deltaTime;
-        float yOffset = yThrow * controlSpeed * Time.deltaTime;
+	private void ProcessTranslation () {
+		xThrow = CrossPlatformInputManager.GetAxis ("Horizontal");
+		yThrow = CrossPlatformInputManager.GetAxis ("Vertical");
 
-        float rawXPos = transform.localPosition.x + xOffset;
-        float clampedXPos = Mathf.Clamp(rawXPos, -xRange, xRange);
+		float xOffset = xThrow * controlSpeed * Time.deltaTime;
+		float yOffset = yThrow * controlSpeed * Time.deltaTime;
 
-        float rawYPos = transform.localPosition.y + yOffset;
-        float clampedYPos = Mathf.Clamp(rawYPos, -yRange, yRange);
+		float rawXPos = transform.localPosition.x + xOffset;
+		float clampedXPos = Mathf.Clamp (rawXPos, -xRange, xRange);
 
-        transform.localPosition = new Vector3(clampedXPos, clampedYPos, transform.localPosition.z);
-    }
+		float rawYPos = transform.localPosition.y + yOffset;
+		float clampedYPos = Mathf.Clamp (rawYPos, -yRange, yRange);
 
-    void ProcessFiring()
-    {
-        if (CrossPlatformInputManager.GetButton("Fire"))
-        {
-            SetGunsActive(true);
-        }
-        else
-        {
-            SetGunsActive(false);
-        }
-    }
+		transform.localPosition = new Vector3 (clampedXPos, clampedYPos, transform.localPosition.z);
+	}
 
-    private void SetGunsActive(bool isActive)
-    {
-        foreach (GameObject gun in guns) // care may affect death FX
-        {
-            var emissionModule = gun.GetComponent<ParticleSystem>().emission;
-            emissionModule.enabled = isActive;
-        }
-    }
+	void ProcessFiring () {
+		if (CrossPlatformInputManager.GetButton ("Fire") || CrossPlatformInputManager.GetButton ("Fire1")) {
+			SetGunsActive (true);
+		} else {
+			SetGunsActive (false);
+		}
+	}
+
+	private void SetGunsActive (bool isActive) {
+		foreach (GameObject gun in guns) // care may affect death FX
+		{
+			var emissionModule = gun.GetComponent<ParticleSystem> ().emission;
+			emissionModule.enabled = isActive;
+		}
+	}
 }
