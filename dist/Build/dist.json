@@ -1,7 +1,7 @@
 {
-"companyName": "DefaultCompany",
-"productName": "4_Argon_Assault",
-"productVersion": "1.0",
+"companyName": "Core Innovation",
+"productName": "Rails Shooter",
+"productVersion": "0.1",
 "dataUrl": "dist.data.unityweb",
 "wasmCodeUrl": "dist.wasm.code.unityweb",
 "wasmFrameworkUrl": "dist.wasm.framework.unityweb",
